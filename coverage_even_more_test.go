@@ -105,16 +105,6 @@ func TestRemovePKCS7Padding_Errors(t *testing.T) {
 	}
 }
 
-func TestSafariCookieFiles_OverrideNotFound(t *testing.T) {
-	if runtime.GOOS != "darwin" {
-		t.Skip("darwin-only")
-	}
-	files, warnings := safariCookieFiles("/no/such/file")
-	if len(files) != 0 || len(warnings) == 0 {
-		t.Fatalf("expected warnings for missing override")
-	}
-}
-
 func TestFirefoxResolveCookieDBs_OverridePaths(t *testing.T) {
 	dir := t.TempDir()
 	dbPath := filepath.Join(dir, "cookies.sqlite")

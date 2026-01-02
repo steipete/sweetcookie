@@ -41,16 +41,6 @@ func TestCopyFileIfExists_SourceExists(t *testing.T) {
 	}
 }
 
-func TestSafariReadString_InvalidOffset(t *testing.T) {
-	if runtime.GOOS != "darwin" {
-		t.Skip("darwin-only")
-	}
-	_, err := safariReadString(bytes.NewReader([]byte("abc")), "x", 0, 0)
-	if err == nil {
-		t.Fatal("expected error")
-	}
-}
-
 func TestChromiumStripHashPrefix_Branches(t *testing.T) {
 	if got := chromiumStripHashPrefix([]byte("x"), 24); string(got) != "x" {
 		t.Fatal("short should not strip")

@@ -1,7 +1,6 @@
 package sweetcookie
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
 	"os"
@@ -100,16 +99,5 @@ func TestReadFirefoxCookies_InvalidSQLiteFile(t *testing.T) {
 	}
 	if len(res.Cookies) != 0 || len(res.Warnings) == 0 {
 		t.Fatalf("expected warnings for invalid firefox DB")
-	}
-}
-
-func TestSafariReadString_MissingNullTerminator(t *testing.T) {
-	if runtime.GOOS != "darwin" {
-		t.Skip("darwin-only")
-	}
-	// No null terminator -> ReadString should error.
-	_, err := safariReadString(bytes.NewReader([]byte("abc")), "x", 0, 1)
-	if err == nil {
-		t.Fatal("expected error")
 	}
 }

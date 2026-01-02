@@ -1,16 +1,14 @@
+//go:build darwin && !ios
+
 package sweetcookie
 
 import (
 	"context"
 	"path/filepath"
-	"runtime"
 	"testing"
 )
 
 func TestSafariReadBinaryCookies_ContextCanceled(t *testing.T) {
-	if runtime.GOOS != "darwin" {
-		t.Skip("darwin-only")
-	}
 	p := filepath.Join(t.TempDir(), "Cookies.binarycookies")
 	writeSafariBinaryCookies(t, p)
 
