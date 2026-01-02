@@ -65,11 +65,10 @@ func linuxChromiumSafeStoragePassword(vendor chromiumVendor, timeout time.Durati
 	if backend == "" {
 		backend = chooseLinuxKeyringBackend()
 	}
-	if backend == linuxKeyringBasic {
-		return "", nil
-	}
 
 	switch backend {
+	case linuxKeyringBasic:
+		return "", nil
 	case linuxKeyringGnome:
 		if pw, err := keyring.Get(vendor.safeStorageService, vendor.safeStorageAccount); err == nil && strings.TrimSpace(pw) != "" {
 			return strings.TrimSpace(pw), nil

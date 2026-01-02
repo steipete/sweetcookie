@@ -14,6 +14,8 @@ func chromiumUserDataDirs(b Browser) []string {
 	}
 
 	switch b {
+	case BrowserInline, BrowserFirefox, BrowserSafari:
+		return nil
 	case BrowserChrome:
 		return []string{
 			filepath.Join(base, "google-chrome"),
@@ -37,9 +39,8 @@ func chromiumUserDataDirs(b Browser) []string {
 		return []string{filepath.Join(base, "vivaldi")}
 	case BrowserOpera:
 		return []string{filepath.Join(base, "opera")}
-	default:
-		return nil
 	}
+	return nil
 }
 
 func xdgConfigHome() string {
