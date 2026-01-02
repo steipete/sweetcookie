@@ -1,0 +1,32 @@
+version: 2
+
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - errcheck
+    - errorlint
+    - exhaustive
+    - gocritic
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - nilerr
+    - prealloc
+    - revive
+    - staticcheck
+    - unconvert
+    - unused
+
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+        disabled: true
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-rules: []

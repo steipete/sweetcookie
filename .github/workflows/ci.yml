@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install tools
+        run: |
+          go install mvdan.cc/gofumpt@latest
+          go install github.com/daixiang0/gci@latest
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+      - name: Format check
+        run: make fmt-check
+
+      - name: Lint
+        run: make lint
+
+      - name: Test
+        run: go test ./...
+
+      - name: Coverage gate (macOS)
+        if: matrix.os == 'macos-latest'
+        run: make cover-check
+
