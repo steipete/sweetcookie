@@ -1,12 +1,12 @@
 module github.com/steipete/sweetcookie
 
-go 1.23.0
+go 1.24.0
 
 require (
 	github.com/go-ini/ini v1.67.0
 	github.com/zalando/go-keyring v0.2.6
-	golang.org/x/crypto v0.40.0
-	golang.org/x/sys v0.34.0
+	golang.org/x/crypto v0.45.0
+	golang.org/x/sys v0.38.0
 	modernc.org/sqlite v1.36.0
 )
 
