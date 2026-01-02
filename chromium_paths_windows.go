@@ -11,6 +11,8 @@ func chromiumUserDataDirs(b Browser) []string {
 	var roots []string
 	if local := os.Getenv("LOCALAPPDATA"); local != "" {
 		switch b {
+		case BrowserInline, BrowserOpera, BrowserFirefox, BrowserSafari:
+			// no LOCALAPPDATA store
 		case BrowserChrome:
 			roots = append(roots, filepath.Join(local, "Google", "Chrome", "User Data"))
 		case BrowserChromium:

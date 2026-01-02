@@ -84,7 +84,7 @@ func chromiumWindowsMasterKey(userDataDir string) ([]byte, error) {
 	}
 	encB64 := strings.TrimSpace(localState.OSCrypt.EncryptedKey)
 	if encB64 == "" {
-		return nil, errors.New("Local State missing os_crypt.encrypted_key")
+		return nil, errors.New("local state missing os_crypt.encrypted_key")
 	}
 	enc, err := base64.StdEncoding.DecodeString(encB64)
 	if err != nil {
@@ -113,7 +113,9 @@ func dpapiUnprotect(data []byte) ([]byte, error) {
 	if err := cryptUnprotectData(newBlob(data), &outBlob); err != nil {
 		return nil, err
 	}
-	defer windows.LocalFree(windows.Handle(unsafe.Pointer(outBlob.pbData))) //nolint:gosec // Windows API requires this.
+	defer func() {
+		_, _ = windows.LocalFree(windows.Handle(unsafe.Pointer(outBlob.pbData))) //nolint:gosec // Windows API requires this.
+	}()
 	return outBlob.bytes(), nil
 }
 
