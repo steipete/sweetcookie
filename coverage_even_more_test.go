@@ -39,7 +39,7 @@ func TestChromiumProbeDefaultStoresAndProfileDirOverride(t *testing.T) {
 
 func TestChromiumVendorAndEnvMappings_CoverAll(t *testing.T) {
 	_ = t
-	for _, b := range []Browser{BrowserChrome, BrowserChromium, BrowserEdge, BrowserBrave, BrowserVivaldi, BrowserOpera, "other"} {
+	for _, b := range []Browser{BrowserChrome, BrowserChromium, BrowserEdge, BrowserBrave, BrowserVivaldi, BrowserOpera, BrowserArc, "other"} {
 		_ = chromiumVendorForBrowser(b)
 		_ = envKeySafeStoragePassword(b)
 	}

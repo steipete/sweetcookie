@@ -23,6 +23,8 @@ func chromiumUserDataDirs(b Browser) []string {
 			roots = append(roots, filepath.Join(local, "BraveSoftware", "Brave-Browser", "User Data"))
 		case BrowserVivaldi:
 			roots = append(roots, filepath.Join(local, "Vivaldi", "User Data"))
+		case BrowserArc:
+			roots = append(roots, filepath.Join(local, "Arc", "User Data"))
 		}
 	}
 

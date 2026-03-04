@@ -29,6 +29,8 @@ func chromiumUserDataDirs(b Browser) []string {
 	case BrowserOpera:
 		// Opera uses an app bundle identifier directory.
 		return []string{filepath.Join(base, "com.operasoftware.Opera")}
+	case BrowserArc:
+		return []string{filepath.Join(base, "Arc", "User Data")}
 	default:
 		return nil
 	}

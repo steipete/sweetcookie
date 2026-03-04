@@ -28,6 +28,8 @@ func chromiumVendorForBrowser(b Browser) chromiumVendor {
 		return chromiumVendor{browser: b, label: "Vivaldi", safeStorageService: "Vivaldi Safe Storage", safeStorageAccount: "Vivaldi"}
 	case BrowserOpera:
 		return chromiumVendor{browser: b, label: "Opera", safeStorageService: "Opera Safe Storage", safeStorageAccount: "Opera"}
+	case BrowserArc:
+		return chromiumVendor{browser: b, label: "Arc", safeStorageService: "Arc Safe Storage", safeStorageAccount: "Arc"}
 	default:
 		return chromiumVendor{browser: b, label: string(b), safeStorageService: fmt.Sprintf("%s Safe Storage", b), safeStorageAccount: string(b)}
 	}

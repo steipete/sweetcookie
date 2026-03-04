@@ -17,7 +17,7 @@ func TestChromiumUserDataDirs_AllCases(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
 
-	for _, b := range []Browser{BrowserChrome, BrowserChromium, BrowserEdge, BrowserBrave, BrowserVivaldi, BrowserOpera, "unknown"} {
+	for _, b := range []Browser{BrowserChrome, BrowserChromium, BrowserEdge, BrowserBrave, BrowserVivaldi, BrowserOpera, BrowserArc, "unknown"} {
 		_ = chromiumUserDataDirs(b)
 	}
 }
