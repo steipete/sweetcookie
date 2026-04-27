@@ -1,4 +1,4 @@
-version: 2
+version: "2"
 
 run:
   timeout: 5m
@@ -19,14 +19,12 @@ linters:
     - staticcheck
     - unconvert
     - unused
-
-linters-settings:
-  revive:
-    rules:
-      - name: exported
-        disabled: true
+  settings:
+    revive:
+      rules:
+        - name: exported
+          disabled: true
 
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude-rules: []
