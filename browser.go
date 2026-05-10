@@ -12,7 +12,7 @@ func readFromBrowser(ctx context.Context, b Browser, origins []requestOrigin, op
 	}
 
 	switch b {
-	case BrowserChrome, BrowserChromium, BrowserEdge, BrowserBrave, BrowserVivaldi, BrowserOpera:
+	case BrowserChrome, BrowserChromium, BrowserEdge, BrowserBrave, BrowserVivaldi, BrowserOpera, BrowserArc:
 		return readChromiumCookies(ctx, chromiumVendorForBrowser(b), profile, origins, opts)
 	case BrowserFirefox:
 		return readFirefoxCookies(ctx, profile, origins, opts)

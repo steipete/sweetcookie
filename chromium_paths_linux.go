@@ -14,7 +14,7 @@ func chromiumUserDataDirs(b Browser) []string {
 	}
 
 	switch b {
-	case BrowserInline, BrowserFirefox, BrowserSafari:
+	case BrowserInline, BrowserArc, BrowserFirefox, BrowserSafari:
 		return nil
 	case BrowserChrome:
 		return []string{
