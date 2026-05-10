@@ -30,7 +30,8 @@ func chromiumUserDataDirs(b Browser) []string {
 
 	// Opera stores its profile in roaming AppData.
 	if roam := os.Getenv("APPDATA"); roam != "" && b == BrowserOpera {
-		roots = append(roots,
+		roots = append(
+			roots,
 			filepath.Join(roam, "Opera Software", "Opera Stable"),
 			filepath.Join(roam, "Opera Software", "Opera GX Stable"),
 		)
