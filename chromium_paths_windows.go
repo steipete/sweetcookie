@@ -23,12 +23,15 @@ func chromiumUserDataDirs(b Browser) []string {
 			roots = append(roots, filepath.Join(local, "BraveSoftware", "Brave-Browser", "User Data"))
 		case BrowserVivaldi:
 			roots = append(roots, filepath.Join(local, "Vivaldi", "User Data"))
+		case BrowserArc:
+			roots = append(roots, filepath.Join(local, "Packages", "TheBrowserCompany.Arc_ttt1ap7aakyb4", "LocalCache", "Local", "Arc", "User Data"))
 		}
 	}
 
 	// Opera stores its profile in roaming AppData.
 	if roam := os.Getenv("APPDATA"); roam != "" && b == BrowserOpera {
-		roots = append(roots,
+		roots = append(
+			roots,
 			filepath.Join(roam, "Opera Software", "Opera Stable"),
 			filepath.Join(roam, "Opera Software", "Opera GX Stable"),
 		)

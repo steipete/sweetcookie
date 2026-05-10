@@ -21,6 +21,8 @@ const (
 	BrowserVivaldi Browser = "vivaldi"
 	// BrowserOpera is Opera.
 	BrowserOpera Browser = "opera"
+	// BrowserArc is Arc Browser.
+	BrowserArc Browser = "arc"
 
 	// BrowserFirefox is Mozilla Firefox.
 	BrowserFirefox Browser = "firefox"
@@ -130,6 +132,7 @@ func DefaultBrowsers() []Browser {
 		BrowserChrome,
 		BrowserEdge,
 		BrowserBrave,
+		BrowserArc,
 		BrowserChromium,
 		BrowserVivaldi,
 		BrowserOpera,
