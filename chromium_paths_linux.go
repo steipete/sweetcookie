@@ -39,8 +39,6 @@ func chromiumUserDataDirs(b Browser) []string {
 		return []string{filepath.Join(base, "vivaldi")}
 	case BrowserOpera:
 		return []string{filepath.Join(base, "opera")}
-	case BrowserArc:
-		return []string{filepath.Join(base, "arc")}
 	}
 	return nil
 }

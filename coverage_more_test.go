@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
+	"strings"
 	"testing"
 )
 
@@ -24,6 +26,9 @@ func TestDefaultBrowsers(t *testing.T) {
 	if _, ok := seen[BrowserChrome]; !ok {
 		t.Fatal("expected chrome")
 	}
+	if _, ok := seen[BrowserArc]; !ok {
+		t.Fatal("expected arc")
+	}
 }
 
 func TestEnvKeySafeStoragePassword(t *testing.T) {
@@ -32,6 +37,9 @@ func TestEnvKeySafeStoragePassword(t *testing.T) {
 	}
 	if envKeySafeStoragePassword(BrowserEdge) != "GOOKIE_EDGE_SAFE_STORAGE_PASSWORD" {
 		t.Fatal("edge mapping")
+	}
+	if envKeySafeStoragePassword(BrowserArc) != "GOOKIE_ARC_SAFE_STORAGE_PASSWORD" {
+		t.Fatal("arc mapping")
 	}
 }
 
@@ -83,6 +91,27 @@ func TestChromiumVendorForBrowser(t *testing.T) {
 	v := chromiumVendorForBrowser(BrowserEdge)
 	if v.safeStorageService == "" || v.safeStorageAccount == "" {
 		t.Fatal("expected safe storage strings")
+	}
+
+	arc := chromiumVendorForBrowser(BrowserArc)
+	if arc.label != "Arc" || arc.safeStorageService != "Arc Safe Storage" || arc.safeStorageAccount != "Arc" {
+		t.Fatalf("unexpected Arc vendor mapping: %#v", arc)
+	}
+}
+
+func TestReadFromBrowser_ArcUsesChromiumReader(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv("LOCALAPPDATA", t.TempDir())
+	t.Setenv("APPDATA", t.TempDir())
+
+	_, warnings, err := readFromBrowser(context.Background(), BrowserArc, nil, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !slices.ContainsFunc(warnings, func(w string) bool {
+		return strings.Contains(w, "Arc cookie store not found")
+	}) {
+		t.Fatalf("expected Arc Chromium warning, got %v", warnings)
 	}
 }
 
