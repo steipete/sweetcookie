@@ -29,6 +29,9 @@ func TestDefaultBrowsers(t *testing.T) {
 	if _, ok := seen[BrowserArc]; !ok {
 		t.Fatal("expected arc")
 	}
+	if _, ok := seen[BrowserHelium]; !ok {
+		t.Fatal("expected helium")
+	}
 }
 
 func TestEnvKeySafeStoragePassword(t *testing.T) {
@@ -40,6 +43,9 @@ func TestEnvKeySafeStoragePassword(t *testing.T) {
 	}
 	if envKeySafeStoragePassword(BrowserArc) != "GOOKIE_ARC_SAFE_STORAGE_PASSWORD" {
 		t.Fatal("arc mapping")
+	}
+	if envKeySafeStoragePassword(BrowserHelium) != "GOOKIE_HELIUM_SAFE_STORAGE_PASSWORD" {
+		t.Fatal("helium mapping")
 	}
 }
 
@@ -97,6 +103,11 @@ func TestChromiumVendorForBrowser(t *testing.T) {
 	if arc.label != "Arc" || arc.safeStorageService != "Arc Safe Storage" || arc.safeStorageAccount != "Arc" {
 		t.Fatalf("unexpected Arc vendor mapping: %#v", arc)
 	}
+
+	helium := chromiumVendorForBrowser(BrowserHelium)
+	if helium.label != "Helium" || helium.safeStorageService != "Helium Storage Key" || helium.safeStorageAccount != "Helium" {
+		t.Fatalf("unexpected Helium vendor mapping: %#v", helium)
+	}
 }
 
 func TestReadFromBrowser_ArcUsesChromiumReader(t *testing.T) {
@@ -112,6 +123,22 @@ func TestReadFromBrowser_ArcUsesChromiumReader(t *testing.T) {
 		return strings.Contains(w, "Arc cookie store not found")
 	}) {
 		t.Fatalf("expected Arc Chromium warning, got %v", warnings)
+	}
+}
+
+func TestReadFromBrowser_HeliumUsesChromiumReader(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv("LOCALAPPDATA", t.TempDir())
+	t.Setenv("APPDATA", t.TempDir())
+
+	_, warnings, err := readFromBrowser(context.Background(), BrowserHelium, nil, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !slices.ContainsFunc(warnings, func(w string) bool {
+		return strings.Contains(w, "Helium cookie store not found")
+	}) {
+		t.Fatalf("expected Helium Chromium warning, got %v", warnings)
 	}
 }
 

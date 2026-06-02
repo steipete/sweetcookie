@@ -4,7 +4,7 @@ Go library to load cookies from local browser profiles.
 
 ## Supported browsers
 
-- Chromium-family: Chrome, Chromium, Microsoft Edge, Brave, Vivaldi, Opera (macOS / Windows / Linux), Arc (macOS / Windows)
+- Chromium-family: Chrome, Chromium, Microsoft Edge, Brave, Vivaldi, Opera (macOS / Windows / Linux), Arc (macOS / Windows), Helium (macOS)
 - Firefox (macOS / Windows / Linux)
 - Safari (macOS only; reads `Cookies.binarycookies`)
 
