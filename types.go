@@ -23,6 +23,8 @@ const (
 	BrowserOpera Browser = "opera"
 	// BrowserArc is Arc Browser.
 	BrowserArc Browser = "arc"
+	// BrowserHelium is Helium Browser.
+	BrowserHelium Browser = "helium"
 
 	// BrowserFirefox is Mozilla Firefox.
 	BrowserFirefox Browser = "firefox"

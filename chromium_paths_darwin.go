@@ -31,6 +31,8 @@ func chromiumUserDataDirs(b Browser) []string {
 		return []string{filepath.Join(base, "com.operasoftware.Opera")}
 	case BrowserArc:
 		return []string{filepath.Join(base, "Arc", "User Data")}
+	case BrowserHelium:
+		return []string{filepath.Join(base, "net.imput.helium")}
 	default:
 		return nil
 	}
