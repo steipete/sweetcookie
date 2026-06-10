@@ -13,8 +13,19 @@ import (
 
 func TestDefaultBrowsers(t *testing.T) {
 	bs := DefaultBrowsers()
-	if len(bs) == 0 {
-		t.Fatal("expected browsers")
+	want := []Browser{
+		BrowserChrome,
+		BrowserEdge,
+		BrowserBrave,
+		BrowserArc,
+		BrowserChromium,
+		BrowserVivaldi,
+		BrowserOpera,
+		BrowserFirefox,
+		BrowserSafari,
+	}
+	if !slices.Equal(bs, want) {
+		t.Fatalf("want default browsers %v got %v", want, bs)
 	}
 	seen := map[Browser]struct{}{}
 	for _, b := range bs {
@@ -23,14 +34,8 @@ func TestDefaultBrowsers(t *testing.T) {
 		}
 		seen[b] = struct{}{}
 	}
-	if _, ok := seen[BrowserChrome]; !ok {
-		t.Fatal("expected chrome")
-	}
-	if _, ok := seen[BrowserArc]; !ok {
-		t.Fatal("expected arc")
-	}
-	if _, ok := seen[BrowserHelium]; !ok {
-		t.Fatal("expected helium")
+	if _, ok := seen[BrowserHelium]; ok {
+		t.Fatal("expected Helium to stay explicit opt-in")
 	}
 }
 

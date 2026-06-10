@@ -138,7 +138,6 @@ func DefaultBrowsers() []Browser {
 		BrowserChromium,
 		BrowserVivaldi,
 		BrowserOpera,
-		BrowserHelium,
 		BrowserFirefox,
 		BrowserSafari,
 	}

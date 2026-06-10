@@ -10,9 +10,13 @@ import (
 )
 
 func chromiumDecryptor(vendor chromiumVendor, _ []chromiumStore, timeout time.Duration) (chromiumDecryptFunc, []string) {
-	password, err := macosReadKeychainPassword(timeout, vendor.safeStorageService, vendor.safeStorageAccount)
-	if err != nil {
-		return nil, []string{fmt.Sprintf("sweetcookie: macOS keychain read failed (%s): %v", vendor.safeStorageService, err)}
+	password, ok := chromiumSafeStoragePasswordOverride(vendor.browser)
+	if !ok {
+		var err error
+		password, err = macosReadKeychainPassword(timeout, vendor.safeStorageService, vendor.safeStorageAccount)
+		if err != nil {
+			return nil, []string{fmt.Sprintf("sweetcookie: macOS keychain read failed (%s): %v", vendor.safeStorageService, err)}
+		}
 	}
 	password = strings.TrimSpace(password)
 	if password == "" {

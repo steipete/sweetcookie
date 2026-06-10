@@ -57,7 +57,7 @@ func chromiumDecryptor(vendor chromiumVendor, _ []chromiumStore, timeout time.Du
 
 func linuxChromiumSafeStoragePassword(vendor chromiumVendor, timeout time.Duration) (password string, warnings []string) {
 	// Escape hatch for deterministic tooling/CI.
-	if override := strings.TrimSpace(os.Getenv(envKeySafeStoragePassword(vendor.browser))); override != "" {
+	if override, ok := chromiumSafeStoragePasswordOverride(vendor.browser); ok {
 		return override, nil
 	}
 

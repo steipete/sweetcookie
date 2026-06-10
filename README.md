@@ -4,7 +4,7 @@ Go library to load cookies from local browser profiles.
 
 ## Supported browsers
 
-- Chromium-family: Chrome, Chromium, Microsoft Edge, Brave, Vivaldi, Opera (macOS / Windows / Linux), Arc (macOS / Windows), Helium (macOS)
+- Chromium-family: Chrome, Chromium, Microsoft Edge, Brave, Vivaldi, Opera (macOS / Windows / Linux), Arc (macOS / Windows), Helium (macOS; explicit opt-in)
 - Firefox (macOS / Windows / Linux)
 - Safari (macOS only; reads `Cookies.binarycookies`)
 
@@ -55,6 +55,8 @@ _ = res
 ## Notes
 
 - Chrome-family cookie DBs can be locked; sweetcookie snapshots the DB + WAL sidecars before reading.
+- Helium support is macOS-only and explicit opt-in via `BrowserHelium`; it is not included in `DefaultBrowsers()`.
+- Chromium safe-storage lookup can be overridden for deterministic tooling with per-browser env vars such as `GOOKIE_HELIUM_SAFE_STORAGE_PASSWORD`.
 - macOS: derives legacy Chromium AES-128-CBC key from Keychain “Safe Storage” password via `security`.
 - Windows: uses DPAPI to unwrap the Chromium master key from `Local State` and decrypts AES-256-GCM cookie values.
 - Linux: tries `go-keyring` first, then shells out to `secret-tool` (GNOME) or `kwallet-query` + `dbus-send` (KDE) to read “Safe Storage”.

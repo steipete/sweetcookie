@@ -1,6 +1,7 @@
 package sweetcookie
 
 import (
+	"os"
 	"strconv"
 	"strings"
 )
@@ -31,4 +32,9 @@ func envKeySafeStoragePassword(b Browser) string {
 	default:
 		return "GOOKIE_SAFE_STORAGE_PASSWORD"
 	}
+}
+
+func chromiumSafeStoragePasswordOverride(b Browser) (string, bool) {
+	override := strings.TrimSpace(os.Getenv(envKeySafeStoragePassword(b)))
+	return override, override != ""
 }
