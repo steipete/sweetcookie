@@ -63,6 +63,12 @@ type Source struct {
 	IsFallback bool
 }
 
+// Container is a Firefox multi-account container (zero value = default / not Firefox).
+type Container struct {
+	ID   int    // firefox userContextId, 0 for the default container
+	Name string // from containers.json, may be empty
+}
+
 // Cookie is a browser cookie record.
 type Cookie struct {
 	Name     string
@@ -72,6 +78,8 @@ type Cookie struct {
 	Secure   bool
 	HTTPOnly bool
 	SameSite SameSite
+
+	Container Container // firefox container, zero if none
 
 	Expires *time.Time
 	Source  Source

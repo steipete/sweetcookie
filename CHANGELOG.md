@@ -2,6 +2,8 @@
 
 ## v0.0.2 - Unreleased
 
+- Firefox multi-account containers: cookies now carry a `Container` and aren't merged across containers.
+
 ## v0.0.1 - 2026-06-10
 
 - Initial Go library for reading, filtering, and deduplicating cookies from local Chrome-family, Firefox, Safari, and inline cookie sources.

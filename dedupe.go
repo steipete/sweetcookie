@@ -1,5 +1,7 @@
 package sweetcookie
 
+import "strconv"
+
 func dedupeCookies(cookies []Cookie) []Cookie {
 	if len(cookies) == 0 {
 		return nil
@@ -8,7 +10,7 @@ func dedupeCookies(cookies []Cookie) []Cookie {
 	merged := make(map[string]Cookie, len(cookies))
 	out := make([]Cookie, 0, len(cookies))
 	for _, c := range cookies {
-		key := c.Name + "\x00" + c.Domain + "\x00" + c.Path
+		key := c.Name + "\x00" + c.Domain + "\x00" + c.Path + "\x00" + strconv.Itoa(c.Container.ID)
 		if _, ok := merged[key]; ok {
 			continue
 		}
