@@ -14,7 +14,8 @@ func chromiumUserDataDirs(b Browser) []string {
 	}
 
 	switch b {
-	case BrowserInline, BrowserArc, BrowserHelium, BrowserFirefox, BrowserSafari:
+	case BrowserInline, BrowserArc, BrowserHelium, BrowserDia, BrowserComet, BrowserAtlas,
+		BrowserFirefox, BrowserZen, BrowserFloorp, BrowserWaterfox, BrowserLibreWolf, BrowserSafari:
 		return nil
 	case BrowserChrome:
 		return []string{
@@ -39,6 +40,8 @@ func chromiumUserDataDirs(b Browser) []string {
 		return []string{filepath.Join(base, "vivaldi")}
 	case BrowserOpera:
 		return []string{filepath.Join(base, "opera")}
+	case BrowserWhale:
+		return []string{filepath.Join(base, "naver-whale")}
 	}
 	return nil
 }

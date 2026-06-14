@@ -11,7 +11,8 @@ func chromiumUserDataDirs(b Browser) []string {
 	var roots []string
 	if local := os.Getenv("LOCALAPPDATA"); local != "" {
 		switch b {
-		case BrowserInline, BrowserOpera, BrowserHelium, BrowserFirefox, BrowserSafari:
+		case BrowserInline, BrowserOpera, BrowserHelium, BrowserDia, BrowserAtlas,
+			BrowserFirefox, BrowserZen, BrowserFloorp, BrowserWaterfox, BrowserLibreWolf, BrowserSafari:
 			// no LOCALAPPDATA store
 		case BrowserChrome:
 			roots = append(roots, filepath.Join(local, "Google", "Chrome", "User Data"))
@@ -25,6 +26,10 @@ func chromiumUserDataDirs(b Browser) []string {
 			roots = append(roots, filepath.Join(local, "Vivaldi", "User Data"))
 		case BrowserArc:
 			roots = append(roots, filepath.Join(local, "Packages", "TheBrowserCompany.Arc_ttt1ap7aakyb4", "LocalCache", "Local", "Arc", "User Data"))
+		case BrowserComet:
+			roots = append(roots, filepath.Join(local, "Perplexity", "Comet", "User Data"))
+		case BrowserWhale:
+			roots = append(roots, filepath.Join(local, "Naver", "Naver Whale", "User Data"))
 		}
 	}
 

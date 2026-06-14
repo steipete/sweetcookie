@@ -7,9 +7,23 @@ import (
 	"path/filepath"
 )
 
-func firefoxRoots() []string {
-	if appData := os.Getenv("APPDATA"); appData != "" {
+func firefoxRoots(b Browser) []string {
+	appData := os.Getenv("APPDATA")
+	if appData == "" {
+		return nil
+	}
+
+	//nolint:exhaustive // Only gecko forks override the default Firefox roots.
+	switch b {
+	case BrowserZen:
+		return []string{filepath.Join(appData, "zen")}
+	case BrowserFloorp:
+		return []string{filepath.Join(appData, "Floorp", "Floorp")}
+	case BrowserWaterfox:
+		return []string{filepath.Join(appData, "Waterfox", "Waterfox")}
+	case BrowserLibreWolf:
+		return []string{filepath.Join(appData, "librewolf")}
+	default: // BrowserFirefox
 		return []string{filepath.Join(appData, "Mozilla", "Firefox")}
 	}
-	return nil
 }

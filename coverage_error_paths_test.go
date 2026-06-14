@@ -60,7 +60,7 @@ func TestReadFirefoxCookies_NoStore(t *testing.T) {
 	}
 	found := false
 	for _, w := range res.Warnings {
-		if w == "sweetcookie: Firefox cookie store not found" {
+		if w == "sweetcookie: firefox cookie store not found" {
 			found = true
 			break
 		}

@@ -12,10 +12,10 @@ import (
 	"github.com/go-ini/ini"
 )
 
-func readFirefoxCookies(ctx context.Context, profileOverride string, origins []requestOrigin, _ Options) ([]Cookie, []string, error) {
-	dbs, warnings := firefoxResolveCookieDBs(profileOverride)
+func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, origins []requestOrigin, _ Options) ([]Cookie, []string, error) {
+	dbs, warnings := firefoxResolveCookieDBs(b, profileOverride)
 	if len(dbs) == 0 {
-		return nil, append(warnings, "sweetcookie: Firefox cookie store not found"), nil
+		return nil, append(warnings, fmt.Sprintf("sweetcookie: %s cookie store not found", b)), nil
 	}
 
 	hosts := originsToHosts(origins)
@@ -30,14 +30,14 @@ func readFirefoxCookies(ctx context.Context, profileOverride string, origins []r
 
 			db, err := chromiumOpenDB(ctx, snap)
 			if err != nil {
-				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to open Firefox cookies DB: %v", err))
+				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to open %s cookies DB: %v", b, err))
 				return
 			}
 			defer func() { _ = db.Close() }()
 
 			rows, err := firefoxReadRows(ctx, db, hosts)
 			if err != nil {
-				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to read Firefox cookies: %v", err))
+				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to read %s cookies: %v", b, err))
 				return
 			}
 			for _, r := range rows {
@@ -56,25 +56,26 @@ func readFirefoxCookies(ctx context.Context, profileOverride string, origins []r
 type firefoxDB struct {
 	path    string
 	profile string
+	browser Browser
 }
 
-func firefoxResolveCookieDBs(override string) ([]firefoxDB, []string) {
+func firefoxResolveCookieDBs(b Browser, override string) ([]firefoxDB, []string) {
 	override = strings.TrimSpace(override)
 	if override != "" {
 		if fi, err := os.Stat(override); err == nil {
 			if fi.IsDir() {
 				dbPath := filepath.Join(override, "cookies.sqlite")
 				if fileExists(dbPath) {
-					return []firefoxDB{{path: dbPath, profile: filepath.Base(override)}}, nil
+					return []firefoxDB{{path: dbPath, profile: filepath.Base(override), browser: b}}, nil
 				}
-				return nil, []string{fmt.Sprintf("sweetcookie: Firefox cookies.sqlite not found in %q", override)}
+				return nil, []string{fmt.Sprintf("sweetcookie: %s cookies.sqlite not found in %q", b, override)}
 			}
-			return []firefoxDB{{path: override, profile: filepath.Base(filepath.Dir(override))}}, nil
+			return []firefoxDB{{path: override, profile: filepath.Base(filepath.Dir(override)), browser: b}}, nil
 		}
 	}
 
 	var out []firefoxDB
-	for _, root := range firefoxRoots() {
+	for _, root := range firefoxRoots(b) {
 		iniPath := filepath.Join(root, "profiles.ini")
 		cfg, err := ini.Load(iniPath)
 		if err != nil {
@@ -106,12 +107,12 @@ func firefoxResolveCookieDBs(override string) ([]firefoxDB, []string) {
 			if override != "" && prof != override && filepath.Base(pathStr) != override {
 				continue
 			}
-			out = append(out, firefoxDB{path: dbPath, profile: prof})
+			out = append(out, firefoxDB{path: dbPath, profile: prof, browser: b})
 		}
 	}
 
 	if override != "" && len(out) == 0 {
-		return nil, []string{fmt.Sprintf("sweetcookie: Firefox profile %q not found", override)}
+		return nil, []string{fmt.Sprintf("sweetcookie: %s profile %q not found", b, override)}
 	}
 	return out, nil
 }
@@ -219,7 +220,7 @@ func firefoxRowToCookie(db firefoxDB, r firefoxRow) (Cookie, bool) {
 		SameSite: chromiumSameSiteFromInt(r.sameSite),
 		Expires:  expires,
 		Source: Source{
-			Browser:   BrowserFirefox,
+			Browser:   db.browser,
 			Profile:   db.profile,
 			StorePath: db.path,
 		},

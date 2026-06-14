@@ -2,6 +2,8 @@
 
 ## v0.0.2 - Unreleased
 
+- More browsers: Dia, Comet, ChatGPT Atlas, Whale, plus Zen / Floorp / Waterfox / LibreWolf.
+
 ## v0.0.1 - 2026-06-10
 
 - Initial Go library for reading, filtering, and deduplicating cookies from local Chrome-family, Firefox, Safari, and inline cookie sources.

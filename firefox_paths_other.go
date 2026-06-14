@@ -2,4 +2,4 @@
 
 package sweetcookie
 
-func firefoxRoots() []string { return nil }
+func firefoxRoots(_ Browser) []string { return nil }
