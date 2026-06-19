@@ -18,9 +18,9 @@ func firefoxRoots(b Browser) []string {
 	case BrowserZen:
 		return []string{filepath.Join(appData, "zen")}
 	case BrowserFloorp:
-		return []string{filepath.Join(appData, "Floorp", "Floorp")}
+		return []string{filepath.Join(appData, "Floorp")}
 	case BrowserWaterfox:
-		return []string{filepath.Join(appData, "Waterfox", "Waterfox")}
+		return []string{filepath.Join(appData, "Waterfox")}
 	case BrowserLibreWolf:
 		return []string{filepath.Join(appData, "librewolf")}
 	default: // BrowserFirefox

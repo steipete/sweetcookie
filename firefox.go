@@ -17,7 +17,7 @@ import (
 func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, origins []requestOrigin, _ Options) ([]Cookie, []string, error) {
 	dbs, warnings := firefoxResolveCookieDBs(b, profileOverride)
 	if len(dbs) == 0 {
-		return nil, append(warnings, fmt.Sprintf("sweetcookie: %s cookie store not found", b)), nil
+		return nil, append(warnings, fmt.Sprintf("sweetcookie: %s cookie store not found", firefoxBrowserLabel(b))), nil
 	}
 
 	hosts := originsToHosts(origins)
@@ -32,14 +32,14 @@ func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, 
 
 			db, err := chromiumOpenDB(ctx, snap)
 			if err != nil {
-				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to open %s cookies DB: %v", b, err))
+				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to open %s cookies DB: %v", firefoxBrowserLabel(b), err))
 				return
 			}
 			defer func() { _ = db.Close() }()
 
 			rows, err := firefoxReadRows(ctx, db, hosts)
 			if err != nil {
-				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to read %s cookies: %v", b, err))
+				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to read %s cookies: %v", firefoxBrowserLabel(b), err))
 				return
 			}
 			for _, r := range rows {
@@ -53,6 +53,23 @@ func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, 
 	}
 
 	return out, warnings, nil
+}
+
+func firefoxBrowserLabel(b Browser) string {
+	switch b {
+	case BrowserFirefox:
+		return "Firefox"
+	case BrowserZen:
+		return "Zen"
+	case BrowserFloorp:
+		return "Floorp"
+	case BrowserWaterfox:
+		return "Waterfox"
+	case BrowserLibreWolf:
+		return "LibreWolf"
+	default:
+		return string(b)
+	}
 }
 
 type firefoxDB struct {
@@ -80,7 +97,7 @@ func firefoxResolveCookieDBs(b Browser, override string) ([]firefoxDB, []string)
 				if fileExists(dbPath) {
 					return []firefoxDB{newFirefoxDB(b, dbPath, filepath.Base(override))}, nil
 				}
-				return nil, []string{fmt.Sprintf("sweetcookie: %s cookies.sqlite not found in %q", b, override)}
+				return nil, []string{fmt.Sprintf("sweetcookie: %s cookies.sqlite not found in %q", firefoxBrowserLabel(b), override)}
 			}
 			return []firefoxDB{newFirefoxDB(b, override, filepath.Base(filepath.Dir(override)))}, nil
 		}
@@ -124,7 +141,7 @@ func firefoxResolveCookieDBs(b Browser, override string) ([]firefoxDB, []string)
 	}
 
 	if override != "" && len(out) == 0 {
-		return nil, []string{fmt.Sprintf("sweetcookie: %s profile %q not found", b, override)}
+		return nil, []string{fmt.Sprintf("sweetcookie: %s profile %q not found", firefoxBrowserLabel(b), override)}
 	}
 	return out, nil
 }

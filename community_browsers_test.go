@@ -53,7 +53,10 @@ func TestFirefoxRoots_Forks(t *testing.T) {
 
 func TestReadFromBrowser_CommunityRouted(t *testing.T) {
 	for _, b := range []Browser{BrowserDia, BrowserComet, BrowserAtlas, BrowserWhale, BrowserZen, BrowserFloorp, BrowserWaterfox, BrowserLibreWolf} {
-		_, warnings, err := readFromBrowser(context.Background(), b, nil, Options{})
+		// An explicit empty profile keeps this routing test isolated from real browser stores.
+		_, warnings, err := readFromBrowser(context.Background(), b, nil, Options{
+			Profiles: map[Browser]string{b: t.TempDir()},
+		})
 		if err != nil {
 			t.Fatalf("%s: unexpected error %v", b, err)
 		}
@@ -61,6 +64,21 @@ func TestReadFromBrowser_CommunityRouted(t *testing.T) {
 			if strings.Contains(w, "unsupported browser") {
 				t.Fatalf("%s: should be routed, got %q", b, w)
 			}
+		}
+	}
+}
+
+func TestFirefoxBrowserLabel(t *testing.T) {
+	cases := map[Browser]string{
+		BrowserFirefox:   "Firefox",
+		BrowserZen:       "Zen",
+		BrowserFloorp:    "Floorp",
+		BrowserWaterfox:  "Waterfox",
+		BrowserLibreWolf: "LibreWolf",
+	}
+	for browser, want := range cases {
+		if got := firefoxBrowserLabel(browser); got != want {
+			t.Fatalf("%s: want %q got %q", browser, want, got)
 		}
 	}
 }
