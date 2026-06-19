@@ -39,7 +39,7 @@ func TestChromiumProbeDefaultStoresAndProfileDirOverride(t *testing.T) {
 
 func TestChromiumVendorAndEnvMappings_CoverAll(t *testing.T) {
 	_ = t
-	for _, b := range []Browser{BrowserChrome, BrowserChromium, BrowserEdge, BrowserBrave, BrowserVivaldi, BrowserOpera, BrowserArc, BrowserHelium, "other"} {
+	for _, b := range []Browser{BrowserChrome, BrowserChromium, BrowserEdge, BrowserBrave, BrowserVivaldi, BrowserOpera, BrowserArc, BrowserHelium, BrowserDia, BrowserComet, BrowserAtlas, BrowserWhale, "other"} {
 		_ = chromiumVendorForBrowser(b)
 		_ = envKeySafeStoragePassword(b)
 	}
@@ -120,7 +120,7 @@ func TestFirefoxResolveCookieDBs_OverridePaths(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dbs, warnings := firefoxResolveCookieDBs(dbPath)
+	dbs, warnings := firefoxResolveCookieDBs(BrowserFirefox, dbPath)
 	if len(warnings) != 0 || len(dbs) != 1 {
 		t.Fatalf("unexpected: %v %v", dbs, warnings)
 	}
@@ -129,7 +129,7 @@ func TestFirefoxResolveCookieDBs_OverridePaths(t *testing.T) {
 	if err := os.MkdirAll(dirNoCookie, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	dbs, warnings = firefoxResolveCookieDBs(dirNoCookie) // dir override, but missing cookies.sqlite in dir root
+	dbs, warnings = firefoxResolveCookieDBs(BrowserFirefox, dirNoCookie) // dir override, but missing cookies.sqlite in dir root
 	if len(dbs) != 0 || len(warnings) == 0 {
 		t.Fatalf("expected warnings for dir override without cookies.sqlite")
 	}

@@ -32,6 +32,14 @@ func chromiumVendorForBrowser(b Browser) chromiumVendor {
 		return chromiumVendor{browser: b, label: "Arc", safeStorageService: "Arc Safe Storage", safeStorageAccount: "Arc"}
 	case BrowserHelium:
 		return chromiumVendor{browser: b, label: "Helium", safeStorageService: "Helium Storage Key", safeStorageAccount: "Helium"}
+	case BrowserDia:
+		return chromiumVendor{browser: b, label: "Dia", safeStorageService: "Dia Safe Storage", safeStorageAccount: "Dia"}
+	case BrowserComet:
+		return chromiumVendor{browser: b, label: "Comet", safeStorageService: "Comet Safe Storage", safeStorageAccount: "Comet"}
+	case BrowserAtlas:
+		return chromiumVendor{browser: b, label: "ChatGPT Atlas", safeStorageService: "ChatGPT Safe Storage", safeStorageAccount: "ChatGPT"}
+	case BrowserWhale:
+		return chromiumVendor{browser: b, label: "Whale", safeStorageService: "Whale Safe Storage", safeStorageAccount: "Whale"}
 	default:
 		return chromiumVendor{browser: b, label: string(b), safeStorageService: fmt.Sprintf("%s Safe Storage", b), safeStorageAccount: string(b)}
 	}

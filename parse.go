@@ -28,6 +28,14 @@ func envKeySafeStoragePassword(b Browser) string {
 		return "GOOKIE_ARC_SAFE_STORAGE_PASSWORD"
 	case BrowserHelium:
 		return "GOOKIE_HELIUM_SAFE_STORAGE_PASSWORD"
+	case BrowserDia:
+		return "GOOKIE_DIA_SAFE_STORAGE_PASSWORD"
+	case BrowserComet:
+		return "GOOKIE_COMET_SAFE_STORAGE_PASSWORD"
+	case BrowserAtlas:
+		return "GOOKIE_ATLAS_SAFE_STORAGE_PASSWORD"
+	case BrowserWhale:
+		return "GOOKIE_WHALE_SAFE_STORAGE_PASSWORD"
 	default:
 		return "GOOKIE_SAFE_STORAGE_PASSWORD"
 	}

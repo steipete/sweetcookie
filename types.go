@@ -25,9 +25,25 @@ const (
 	BrowserArc Browser = "arc"
 	// BrowserHelium is Helium Browser.
 	BrowserHelium Browser = "helium"
+	// BrowserDia is Dia.
+	BrowserDia Browser = "dia"
+	// BrowserComet is Perplexity Comet.
+	BrowserComet Browser = "comet"
+	// BrowserAtlas is ChatGPT Atlas.
+	BrowserAtlas Browser = "atlas"
+	// BrowserWhale is Naver Whale.
+	BrowserWhale Browser = "whale"
 
 	// BrowserFirefox is Mozilla Firefox.
 	BrowserFirefox Browser = "firefox"
+	// BrowserZen is Zen.
+	BrowserZen Browser = "zen"
+	// BrowserFloorp is Floorp.
+	BrowserFloorp Browser = "floorp"
+	// BrowserWaterfox is Waterfox.
+	BrowserWaterfox Browser = "waterfox"
+	// BrowserLibreWolf is LibreWolf.
+	BrowserLibreWolf Browser = "librewolf"
 
 	// BrowserSafari is Apple Safari (macOS only).
 	BrowserSafari Browser = "safari"

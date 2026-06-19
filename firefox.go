@@ -14,10 +14,10 @@ import (
 	"github.com/go-ini/ini"
 )
 
-func readFirefoxCookies(ctx context.Context, profileOverride string, origins []requestOrigin, _ Options) ([]Cookie, []string, error) {
-	dbs, warnings := firefoxResolveCookieDBs(profileOverride)
+func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, origins []requestOrigin, _ Options) ([]Cookie, []string, error) {
+	dbs, warnings := firefoxResolveCookieDBs(b, profileOverride)
 	if len(dbs) == 0 {
-		return nil, append(warnings, "sweetcookie: Firefox cookie store not found"), nil
+		return nil, append(warnings, fmt.Sprintf("sweetcookie: %s cookie store not found", firefoxBrowserLabel(b))), nil
 	}
 
 	hosts := originsToHosts(origins)
@@ -32,14 +32,14 @@ func readFirefoxCookies(ctx context.Context, profileOverride string, origins []r
 
 			db, err := chromiumOpenDB(ctx, snap)
 			if err != nil {
-				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to open Firefox cookies DB: %v", err))
+				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to open %s cookies DB: %v", firefoxBrowserLabel(b), err))
 				return
 			}
 			defer func() { _ = db.Close() }()
 
 			rows, err := firefoxReadRows(ctx, db, hosts)
 			if err != nil {
-				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to read Firefox cookies: %v", err))
+				warnings = append(warnings, fmt.Sprintf("sweetcookie: failed to read %s cookies: %v", firefoxBrowserLabel(b), err))
 				return
 			}
 			for _, r := range rows {
@@ -55,37 +55,57 @@ func readFirefoxCookies(ctx context.Context, profileOverride string, origins []r
 	return out, warnings, nil
 }
 
+func firefoxBrowserLabel(b Browser) string {
+	//nolint:exhaustive // Only Firefox-family browsers have dedicated display labels.
+	switch b {
+	case BrowserFirefox:
+		return "Firefox"
+	case BrowserZen:
+		return "Zen"
+	case BrowserFloorp:
+		return "Floorp"
+	case BrowserWaterfox:
+		return "Waterfox"
+	case BrowserLibreWolf:
+		return "LibreWolf"
+	default:
+		return string(b)
+	}
+}
+
 type firefoxDB struct {
 	path       string
 	profile    string
+	browser    Browser
 	containers map[int]string
 }
 
-func newFirefoxDB(dbPath, profile string) firefoxDB {
+func newFirefoxDB(b Browser, dbPath, profile string) firefoxDB {
 	return firefoxDB{
 		path:       dbPath,
 		profile:    profile,
+		browser:    b,
 		containers: firefoxLoadContainers(filepath.Dir(dbPath)),
 	}
 }
 
-func firefoxResolveCookieDBs(override string) ([]firefoxDB, []string) {
+func firefoxResolveCookieDBs(b Browser, override string) ([]firefoxDB, []string) {
 	override = strings.TrimSpace(override)
 	if override != "" {
 		if fi, err := os.Stat(override); err == nil {
 			if fi.IsDir() {
 				dbPath := filepath.Join(override, "cookies.sqlite")
 				if fileExists(dbPath) {
-					return []firefoxDB{newFirefoxDB(dbPath, filepath.Base(override))}, nil
+					return []firefoxDB{newFirefoxDB(b, dbPath, filepath.Base(override))}, nil
 				}
-				return nil, []string{fmt.Sprintf("sweetcookie: Firefox cookies.sqlite not found in %q", override)}
+				return nil, []string{fmt.Sprintf("sweetcookie: %s cookies.sqlite not found in %q", firefoxBrowserLabel(b), override)}
 			}
-			return []firefoxDB{newFirefoxDB(override, filepath.Base(filepath.Dir(override)))}, nil
+			return []firefoxDB{newFirefoxDB(b, override, filepath.Base(filepath.Dir(override)))}, nil
 		}
 	}
 
 	var out []firefoxDB
-	for _, root := range firefoxRoots() {
+	for _, root := range firefoxRoots(b) {
 		iniPath := filepath.Join(root, "profiles.ini")
 		cfg, err := ini.Load(iniPath)
 		if err != nil {
@@ -117,12 +137,12 @@ func firefoxResolveCookieDBs(override string) ([]firefoxDB, []string) {
 			if override != "" && prof != override && filepath.Base(pathStr) != override {
 				continue
 			}
-			out = append(out, newFirefoxDB(dbPath, prof))
+			out = append(out, newFirefoxDB(b, dbPath, prof))
 		}
 	}
 
 	if override != "" && len(out) == 0 {
-		return nil, []string{fmt.Sprintf("sweetcookie: Firefox profile %q not found", override)}
+		return nil, []string{fmt.Sprintf("sweetcookie: %s profile %q not found", firefoxBrowserLabel(b), override)}
 	}
 	return out, nil
 }
@@ -277,7 +297,7 @@ func firefoxRowToCookie(db firefoxDB, r firefoxRow) (Cookie, bool) {
 		Container: firefoxContainerFromOriginAttributes(r.originAttributes, db.containers),
 		Expires:   expires,
 		Source: Source{
-			Browser:   BrowserFirefox,
+			Browser:   db.browser,
 			Profile:   db.profile,
 			StorePath: db.path,
 		},

@@ -3,40 +3,42 @@
 package sweetcookie
 
 import (
-	"os"
 	"path/filepath"
+	"testing"
 )
 
-func firefoxRoots(b Browser) []string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return nil
-	}
+func TestFirefoxRoots_CommunityLinux(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
 
-	//nolint:exhaustive // Only gecko forks override the default Firefox roots.
-	switch b {
-	case BrowserZen:
-		return []string{
+	cases := map[Browser][]string{
+		BrowserZen: {
 			filepath.Join(home, ".zen"),
 			filepath.Join(home, ".var", "app", "app.zen_browser.zen", ".zen"),
-		}
-	case BrowserFloorp:
-		return []string{
+		},
+		BrowserFloorp: {
 			filepath.Join(home, ".mozilla", "floorp"),
 			filepath.Join(home, ".floorp"),
 			filepath.Join(home, ".var", "app", "one.ablaze.floorp", ".floorp"),
-		}
-	case BrowserWaterfox:
-		return []string{
+		},
+		BrowserWaterfox: {
 			filepath.Join(home, ".waterfox"),
 			filepath.Join(home, ".var", "app", "net.waterfox.waterfox", ".waterfox"),
-		}
-	case BrowserLibreWolf:
-		return []string{
+		},
+		BrowserLibreWolf: {
 			filepath.Join(home, ".librewolf"),
 			filepath.Join(home, ".var", "app", "io.gitlab.librewolf-community", ".librewolf"),
+		},
+	}
+	for browser, want := range cases {
+		got := firefoxRoots(browser)
+		if len(got) != len(want) {
+			t.Fatalf("%s: want %v got %v", browser, want, got)
 		}
-	default: // BrowserFirefox
-		return []string{filepath.Join(home, ".mozilla", "firefox")}
+		for i := range want {
+			if got[i] != want[i] {
+				t.Fatalf("%s: want %v got %v", browser, want, got)
+			}
+		}
 	}
 }
