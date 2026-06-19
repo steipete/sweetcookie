@@ -109,13 +109,13 @@ func TestFirefoxResolveCookieDBs_OverridePaths(t *testing.T) {
 	dir := t.TempDir()
 	dbPath := filepath.Join(dir, "cookies.sqlite")
 	db := openTestSQLite(t, dbPath)
-	if _, err := db.Exec(`CREATE TABLE moz_cookies(host TEXT, name TEXT, value TEXT, path TEXT, expiry INTEGER, isSecure INTEGER, isHttpOnly INTEGER, sameSite INTEGER)`); err != nil {
+	if _, err := db.Exec(`CREATE TABLE moz_cookies(host TEXT, name TEXT, value TEXT, path TEXT, expiry INTEGER, isSecure INTEGER, isHttpOnly INTEGER, sameSite INTEGER, originAttributes TEXT)`); err != nil {
 		t.Fatal(err)
 	}
 	expires := time.Now().Add(time.Hour).Unix()
 	if _, err := db.Exec(
-		`INSERT INTO moz_cookies(host,name,value,path,expiry,isSecure,isHttpOnly,sameSite) VALUES(?,?,?,?,?,?,?,?)`,
-		".example.com", "a", "b", "/", expires, 0, 0, 0,
+		`INSERT INTO moz_cookies(host,name,value,path,expiry,isSecure,isHttpOnly,sameSite,originAttributes) VALUES(?,?,?,?,?,?,?,?,?)`,
+		".example.com", "a", "b", "/", expires, 0, 0, 0, "",
 	); err != nil {
 		t.Fatal(err)
 	}

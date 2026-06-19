@@ -3,9 +3,11 @@ package sweetcookie
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -54,9 +56,19 @@ func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, 
 }
 
 type firefoxDB struct {
-	path    string
-	profile string
-	browser Browser
+	path       string
+	profile    string
+	browser    Browser
+	containers map[int]string
+}
+
+func newFirefoxDB(b Browser, dbPath, profile string) firefoxDB {
+	return firefoxDB{
+		path:       dbPath,
+		profile:    profile,
+		browser:    b,
+		containers: firefoxLoadContainers(filepath.Dir(dbPath)),
+	}
 }
 
 func firefoxResolveCookieDBs(b Browser, override string) ([]firefoxDB, []string) {
@@ -66,11 +78,11 @@ func firefoxResolveCookieDBs(b Browser, override string) ([]firefoxDB, []string)
 			if fi.IsDir() {
 				dbPath := filepath.Join(override, "cookies.sqlite")
 				if fileExists(dbPath) {
-					return []firefoxDB{{path: dbPath, profile: filepath.Base(override), browser: b}}, nil
+					return []firefoxDB{newFirefoxDB(b, dbPath, filepath.Base(override))}, nil
 				}
 				return nil, []string{fmt.Sprintf("sweetcookie: %s cookies.sqlite not found in %q", b, override)}
 			}
-			return []firefoxDB{{path: override, profile: filepath.Base(filepath.Dir(override)), browser: b}}, nil
+			return []firefoxDB{newFirefoxDB(b, override, filepath.Base(filepath.Dir(override)))}, nil
 		}
 	}
 
@@ -107,7 +119,7 @@ func firefoxResolveCookieDBs(b Browser, override string) ([]firefoxDB, []string)
 			if override != "" && prof != override && filepath.Base(pathStr) != override {
 				continue
 			}
-			out = append(out, firefoxDB{path: dbPath, profile: prof, browser: b})
+			out = append(out, newFirefoxDB(b, dbPath, prof))
 		}
 	}
 
@@ -117,21 +129,63 @@ func firefoxResolveCookieDBs(b Browser, override string) ([]firefoxDB, []string)
 	return out, nil
 }
 
+// firefoxLoadContainers returns container names keyed by profile-local userContextId.
+func firefoxLoadContainers(profileDir string) map[int]string {
+	raw, err := os.ReadFile(filepath.Join(profileDir, "containers.json"))
+	if err != nil {
+		return nil
+	}
+	var doc struct {
+		Identities []struct {
+			UserContextID int    `json:"userContextId"`
+			Name          string `json:"name"`
+		} `json:"identities"`
+	}
+	if err := json.Unmarshal(raw, &doc); err != nil {
+		return nil
+	}
+	out := make(map[int]string, len(doc.Identities))
+	for _, id := range doc.Identities {
+		if id.UserContextID > 0 && id.Name != "" {
+			out[id.UserContextID] = id.Name
+		}
+	}
+	return out
+}
+
+// firefoxContainerFromOriginAttributes extracts a profile-local userContextId.
+func firefoxContainerFromOriginAttributes(originAttributes string, names map[int]string) Container {
+	trimmed := strings.TrimPrefix(originAttributes, "^")
+	for _, part := range strings.Split(trimmed, "&") {
+		value, ok := strings.CutPrefix(part, "userContextId=")
+		if !ok {
+			continue
+		}
+		id, err := strconv.Atoi(value)
+		if err != nil || id <= 0 {
+			return Container{}
+		}
+		return Container{ID: id, Name: names[id]}
+	}
+	return Container{}
+}
+
 type firefoxRow struct {
-	host     string
-	name     string
-	value    string
-	path     string
-	expiry   int64
-	isSecure bool
-	httpOnly bool
-	sameSite int64
+	host             string
+	name             string
+	value            string
+	path             string
+	expiry           int64
+	isSecure         bool
+	httpOnly         bool
+	sameSite         int64
+	originAttributes string
 }
 
 func firefoxReadRows(ctx context.Context, db *sql.DB, hosts []string) ([]firefoxRow, error) {
 	where, args := firefoxHostWhereClause(hosts)
 	//nolint:gosec // `where` is generated with placeholders; hosts are passed via args.
-	query := `SELECT host, name, value, path, expiry, isSecure, isHttpOnly, sameSite FROM moz_cookies WHERE (` + where + `) ORDER BY expiry DESC`
+	query := `SELECT host, name, value, path, expiry, isSecure, isHttpOnly, sameSite, originAttributes FROM moz_cookies WHERE (` + where + `) ORDER BY expiry DESC`
 
 	rows, err := db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -146,8 +200,9 @@ func firefoxReadRows(ctx context.Context, db *sql.DB, hosts []string) ([]firefox
 		var secure sql.NullInt64
 		var httpOnly sql.NullInt64
 		var sameSite sql.NullInt64
+		var originAttributes sql.NullString
 
-		if err := rows.Scan(&r.host, &r.name, &r.value, &r.path, &expiry, &secure, &httpOnly, &sameSite); err != nil {
+		if err := rows.Scan(&r.host, &r.name, &r.value, &r.path, &expiry, &secure, &httpOnly, &sameSite, &originAttributes); err != nil {
 			return nil, err
 		}
 		if expiry.Valid {
@@ -157,6 +212,9 @@ func firefoxReadRows(ctx context.Context, db *sql.DB, hosts []string) ([]firefox
 		r.httpOnly = httpOnly.Valid && httpOnly.Int64 == 1
 		if sameSite.Valid {
 			r.sameSite = sameSite.Int64
+		}
+		if originAttributes.Valid {
+			r.originAttributes = originAttributes.String
 		}
 
 		out = append(out, r)
@@ -211,14 +269,15 @@ func firefoxRowToCookie(db firefoxDB, r firefoxRow) (Cookie, bool) {
 	}
 
 	return Cookie{
-		Name:     r.name,
-		Value:    r.value,
-		Domain:   strings.TrimPrefix(r.host, "."),
-		Path:     r.path,
-		Secure:   r.isSecure,
-		HTTPOnly: r.httpOnly,
-		SameSite: chromiumSameSiteFromInt(r.sameSite),
-		Expires:  expires,
+		Name:      r.name,
+		Value:     r.value,
+		Domain:    strings.TrimPrefix(r.host, "."),
+		Path:      r.path,
+		Secure:    r.isSecure,
+		HTTPOnly:  r.httpOnly,
+		SameSite:  chromiumSameSiteFromInt(r.sameSite),
+		Container: firefoxContainerFromOriginAttributes(r.originAttributes, db.containers),
+		Expires:   expires,
 		Source: Source{
 			Browser:   db.browser,
 			Profile:   db.profile,

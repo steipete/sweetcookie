@@ -8,6 +8,10 @@ Go library to load cookies from local browser profiles.
 - Firefox and Firefox-based browsers: Firefox (macOS / Windows / Linux), Zen, Floorp, Waterfox, LibreWolf
 - Safari (macOS only; reads `Cookies.binarycookies`)
 
+Firefox multi-account containers show up on `Cookie.Container` (`ID` is the
+`userContextId`, `Name` comes from `containers.json`). Default container is the
+zero value, and cookies in different containers aren't merged together.
+
 ## Usage
 
 ```go

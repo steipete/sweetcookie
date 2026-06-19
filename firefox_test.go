@@ -42,13 +42,13 @@ func TestGet_Firefox_DiscoveryViaProfilesINI(t *testing.T) {
 	}
 
 	db := openTestSQLite(t, dbPath)
-	if _, err := db.Exec(`CREATE TABLE moz_cookies(host TEXT, name TEXT, value TEXT, path TEXT, expiry INTEGER, isSecure INTEGER, isHttpOnly INTEGER, sameSite INTEGER)`); err != nil {
+	if _, err := db.Exec(`CREATE TABLE moz_cookies(host TEXT, name TEXT, value TEXT, path TEXT, expiry INTEGER, isSecure INTEGER, isHttpOnly INTEGER, sameSite INTEGER, originAttributes TEXT)`); err != nil {
 		t.Fatal(err)
 	}
 	expiry := time.Now().Add(24 * time.Hour).Unix()
 	if _, err := db.Exec(
-		`INSERT INTO moz_cookies(host,name,value,path,expiry,isSecure,isHttpOnly,sameSite) VALUES(?,?,?,?,?,?,?,?)`,
-		".example.com", "sid", "firefox", "/", expiry, 1, 1, 2,
+		`INSERT INTO moz_cookies(host,name,value,path,expiry,isSecure,isHttpOnly,sameSite,originAttributes) VALUES(?,?,?,?,?,?,?,?,?)`,
+		".example.com", "sid", "firefox", "/", expiry, 1, 1, 2, "",
 	); err != nil {
 		t.Fatal(err)
 	}
