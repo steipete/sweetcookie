@@ -56,6 +56,7 @@ func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, 
 }
 
 func firefoxBrowserLabel(b Browser) string {
+	//nolint:exhaustive // Only Firefox-family browsers have dedicated display labels.
 	switch b {
 	case BrowserFirefox:
 		return "Firefox"
