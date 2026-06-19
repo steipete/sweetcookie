@@ -2,7 +2,7 @@
 
 ## v0.0.2 - Unreleased
 
-- Firefox multi-account containers: cookies now carry a `Container` and aren't merged across containers.
+- Add Firefox Multi-Account Container metadata and preserve cookies across profile-scoped containers. Thanks @sudosubin.
 
 ## v0.0.1 - 2026-06-10
 

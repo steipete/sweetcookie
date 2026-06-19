@@ -51,3 +51,19 @@ func TestDedupeCookies(t *testing.T) {
 		t.Fatalf("keeps first")
 	}
 }
+
+func TestDedupeCookies_FirefoxContainerIDsAreProfileScoped(t *testing.T) {
+	cookies := []Cookie{
+		{Name: "sid", Domain: "example.com", Path: "/", Value: "personal", Container: Container{ID: 1}, Source: Source{Browser: BrowserFirefox, Profile: "personal", StorePath: "/profiles/personal/cookies.sqlite"}},
+		{Name: "sid", Domain: "example.com", Path: "/", Value: "work", Container: Container{ID: 1}, Source: Source{Browser: BrowserFirefox, Profile: "work", StorePath: "/profiles/work/cookies.sqlite"}},
+		{Name: "sid", Domain: "example.com", Path: "/", Value: "duplicate", Container: Container{ID: 1}, Source: Source{Browser: BrowserFirefox, Profile: "personal", StorePath: "/profiles/personal/cookies.sqlite"}},
+	}
+
+	out := dedupeCookies(cookies)
+	if len(out) != 2 {
+		t.Fatalf("want one cookie per profile-scoped container, got %d", len(out))
+	}
+	if out[0].Value != "personal" || out[1].Value != "work" {
+		t.Fatalf("unexpected cookies: %#v", out)
+	}
+}

@@ -127,7 +127,7 @@ func firefoxResolveCookieDBs(override string) ([]firefoxDB, []string) {
 	return out, nil
 }
 
-// userContextId -> name from the profile's containers.json (nil if missing/bad)
+// firefoxLoadContainers returns container names keyed by profile-local userContextId.
 func firefoxLoadContainers(profileDir string) map[int]string {
 	raw, err := os.ReadFile(filepath.Join(profileDir, "containers.json"))
 	if err != nil {
@@ -144,14 +144,14 @@ func firefoxLoadContainers(profileDir string) map[int]string {
 	}
 	out := make(map[int]string, len(doc.Identities))
 	for _, id := range doc.Identities {
-		if id.Name != "" {
+		if id.UserContextID > 0 && id.Name != "" {
 			out[id.UserContextID] = id.Name
 		}
 	}
 	return out
 }
 
-// pulls the userContextId out of an originAttributes value like "^userContextId=2&..."
+// firefoxContainerFromOriginAttributes extracts a profile-local userContextId.
 func firefoxContainerFromOriginAttributes(originAttributes string, names map[int]string) Container {
 	trimmed := strings.TrimPrefix(originAttributes, "^")
 	for _, part := range strings.Split(trimmed, "&") {
@@ -160,7 +160,7 @@ func firefoxContainerFromOriginAttributes(originAttributes string, names map[int
 			continue
 		}
 		id, err := strconv.Atoi(value)
-		if err != nil || id == 0 {
+		if err != nil || id <= 0 {
 			return Container{}
 		}
 		return Container{ID: id, Name: names[id]}

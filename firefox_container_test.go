@@ -20,7 +20,9 @@ func TestFirefoxContainerFromOriginAttributes(t *testing.T) {
 		{"^userContextId=0", 0, ""},
 		{"^userContextId=2", 2, "Work"},
 		{"^userContextId=1&firstPartyDomain=example.com", 1, "Personal"},
+		{"^firstPartyDomain=example.com&userContextId=2", 2, "Work"},
 		{"^userContextId=9", 9, ""}, // id without a name mapping
+		{"^userContextId=-1", 0, ""},
 		{"^firstPartyDomain=example.com", 0, ""},
 		{"garbage", 0, ""},
 	}
@@ -37,7 +39,8 @@ func TestFirefoxLoadContainers(t *testing.T) {
 	json := `{"version":5,"identities":[
 		{"userContextId":1,"name":"Personal","icon":"fingerprint","color":"blue"},
 		{"userContextId":2,"name":"Work","icon":"briefcase","color":"orange"},
-		{"userContextId":3,"icon":"cart","color":"pink"}
+		{"userContextId":3,"icon":"cart","color":"pink"},
+		{"userContextId":0,"name":"Default","icon":"fingerprint","color":"blue"}
 	]}`
 	if err := os.WriteFile(filepath.Join(dir, "containers.json"), []byte(json), 0o644); err != nil {
 		t.Fatal(err)

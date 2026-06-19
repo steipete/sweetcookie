@@ -11,6 +11,13 @@ func dedupeCookies(cookies []Cookie) []Cookie {
 	out := make([]Cookie, 0, len(cookies))
 	for _, c := range cookies {
 		key := c.Name + "\x00" + c.Domain + "\x00" + c.Path + "\x00" + strconv.Itoa(c.Container.ID)
+		if c.Container.ID != 0 {
+			containerScope := c.Source.StorePath
+			if containerScope == "" {
+				containerScope = c.Source.Profile
+			}
+			key += "\x00" + containerScope
+		}
 		if _, ok := merged[key]; ok {
 			continue
 		}
