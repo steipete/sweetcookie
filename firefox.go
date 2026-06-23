@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-ini/ini"
+	"gopkg.in/ini.v1"
 )
 
 func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, origins []requestOrigin, _ Options) ([]Cookie, []string, error) {
