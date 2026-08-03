@@ -1,5 +1,7 @@
 # Changelog
 
+## v0.0.3 - Unreleased
+
 ## v0.0.2 - 2026-08-02
 
 - Add Firefox Multi-Account Container metadata and preserve cookies across profile-scoped containers. Thanks @sudosubin.
