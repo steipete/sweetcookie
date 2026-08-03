@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.0.2 - Unreleased
+## v0.0.2 - 2026-08-02
 
 - Add Firefox Multi-Account Container metadata and preserve cookies across profile-scoped containers. Thanks @sudosubin.
 - Add Dia, Comet, ChatGPT Atlas, Whale, Zen, Floorp, Waterfox, and LibreWolf browser support. Thanks @sudosubin.
