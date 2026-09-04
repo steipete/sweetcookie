@@ -2,6 +2,8 @@
 
 ## v0.0.3 - Unreleased
 
+- Update the SQLite driver to v1.58.0 and its matching libc dependency; use Go 1.25.14 for development and CI while preserving Go 1.25.0 support.
+
 ## v0.0.2 - 2026-08-02
 
 - Add Firefox Multi-Account Container metadata and preserve cookies across profile-scoped containers. Thanks @sudosubin.

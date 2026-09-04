@@ -119,6 +119,9 @@ make ci
 ```
 
 `make ci` checks formatting, lint, tests, and the coverage threshold.
+Development uses Go 1.25.14 through the `go.mod` toolchain directive. CI tests
+that patch on macOS, Windows, and Linux, plus Go 1.25.0 on Linux to verify the
+supported source minimum.
 
 ## License
 
