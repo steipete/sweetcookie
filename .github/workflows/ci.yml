@@ -10,7 +10,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        go: ['1.25.14']
+        include:
+          - os: ubuntu-latest
+            go: '1.25.0'
     runs-on: ${{ matrix.os }}
+    env:
+      # Keep the minimum-version job from selecting the preferred toolchain.
+      GOTOOLCHAIN: local
     defaults:
       run:
         shell: bash
@@ -18,7 +25,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version-file: go.mod
+          go-version: ${{ matrix.go }}
           cache: false
 
       - name: Install tools
