@@ -10,11 +10,11 @@ lint:
 
 fmt:
 	gofumpt -w .
-	gci write --skip-generated -s standard -s default -s blank .
+	gci write --skip-generated -s standard -s default -s blank . </dev/null
 
 fmt-check:
-	test -z "$$(gofumpt -l .)"
-	test -z "$$(gci diff --skip-generated -s standard -s default -s blank .)"
+	output="$$(gofumpt -l .)" && test -z "$$output"
+	output="$$(gci diff --skip-generated -s standard -s default -s blank . </dev/null)" && test -z "$$output"
 
 cover-check:
 	$(GO) test ./... -coverprofile=coverage.out

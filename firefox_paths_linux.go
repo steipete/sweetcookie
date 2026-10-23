@@ -37,6 +37,15 @@ func firefoxRoots(b Browser) []string {
 			filepath.Join(home, ".var", "app", "io.gitlab.librewolf-community", ".librewolf"),
 		}
 	default: // BrowserFirefox
-		return []string{filepath.Join(home, ".mozilla", "firefox")}
+		configHome := os.Getenv("XDG_CONFIG_HOME")
+		if !filepath.IsAbs(configHome) {
+			configHome = filepath.Join(home, ".config")
+		}
+		return []string{
+			filepath.Join(home, ".mozilla", "firefox"),
+			filepath.Join(home, "snap", "firefox", "common", ".mozilla", "firefox"),
+			filepath.Join(home, ".var", "app", "org.mozilla.firefox", ".mozilla", "firefox"),
+			filepath.Join(configHome, "mozilla", "firefox"),
+		}
 	}
 }

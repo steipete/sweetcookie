@@ -2,7 +2,7 @@ module github.com/steipete/sweetcookie
 
 go 1.25.0
 
-toolchain go1.25.14
+toolchain go1.27.3
 
 require (
 	github.com/zalando/go-keyring v0.2.8

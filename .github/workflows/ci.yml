@@ -10,13 +10,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, xcode-27, windows-latest]
-        go: ['1.25.14']
-        include:
-          - os: ubuntu-latest
-            go: '1.25.0'
+        go: ['1.27.3']
     runs-on: ${{ matrix.os }}
     env:
-      # Keep the minimum-version job from selecting the preferred toolchain.
+      # Run every platform with the patched toolchain.
       GOTOOLCHAIN: local
     defaults:
       run:
@@ -29,13 +26,10 @@ jobs:
           cache: false
 
       - name: Install tools
-        env:
-          # Tool builds may need a newer Go version than the library supports.
-          GOTOOLCHAIN: auto
         run: |
-          go install mvdan.cc/gofumpt@v0.11.0
+          go install mvdan.cc/gofumpt@v0.12.0
           go install github.com/daixiang0/gci@v0.14.0
-          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 
       - name: Format check
         run: make fmt-check

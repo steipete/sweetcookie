@@ -5,7 +5,7 @@ npm package, macOS app, or Homebrew formula.
 
 `.github/workflows/release.yml` calls the shared source archetype at `@v1`.
 It checks `VERSION`, the dated changelog section, protected-main ancestry and
-green push CI on the exact commit. It runs the library tests with Go 1.25.14,
+green push CI on the exact commit. It runs the library tests with Go 1.27.3,
 then two independent runners verify commit-bound source tar/zip archives, exact
 release notes, the asset inventory and `SHA256SUMS` before GitHub publication.
 

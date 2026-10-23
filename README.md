@@ -76,7 +76,7 @@ result, err := sweetcookie.Get(context.Background(), sweetcookie.Options{
 | Firefox, Zen, Floorp, Waterfox, LibreWolf | macOS, Windows, Linux |
 | Safari | macOS |
 
-Helium is not part of `DefaultBrowsers()`; request it with `BrowserHelium`. Firefox Multi-Account Container metadata is exposed through `Cookie.Container`: `ID` is Firefox's `userContextId`, and `Name` comes from `containers.json`. Cookies from different containers remain distinct.
+Helium is not part of `DefaultBrowsers()`; request it with `BrowserHelium`. Linux Firefox discovery checks the legacy `~/.mozilla/firefox` root first, then Snap, Flatpak, and XDG configuration roots; duplicate cookies keep legacy precedence. `XDG_CONFIG_HOME` must be absolute, otherwise `~/.config` is used. Firefox Multi-Account Container metadata is exposed through `Cookie.Container`: `ID` is Firefox's `userContextId`, and `Name` comes from `containers.json`. Cookies from different containers remain distinct.
 
 ## Selecting cookies and profiles
 
@@ -118,10 +118,12 @@ go test ./...
 make ci
 ```
 
-`make ci` checks formatting, lint, tests, and the coverage threshold.
-Development uses Go 1.25.14 through the `go.mod` toolchain directive. CI tests
-that patch on macOS 27 (`xcode-27`), Windows, and Linux, plus Go 1.25.0 on Linux to verify the
-supported source minimum.
+`make ci` checks formatting, lint, tests, and the 90% macOS coverage threshold.
+On Linux and Windows, run `make fmt-check lint test`; the cross-platform CI runs
+those checks while macOS enforces the coverage threshold.
+Development, CI, and release verification use the patched Go 1.27.3 toolchain. CI tests
+macOS 27 (`xcode-27`), Windows, and Linux. The module retains Go 1.25.0 as its supported
+source minimum.
 
 ## License
 
