@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.0.3 - Unreleased
+## Unreleased
+
+## v0.1.0 - 2026-10-23
+
+**Highlights:** Discover Firefox cookies in Linux Snap, Flatpak, and XDG profiles; update SQLite and the Go toolchain.
 
 - Discover Linux Firefox profiles from Snap, Flatpak, and XDG roots while preserving legacy cookie precedence and ignoring relative XDG roots. Thanks @SebTardif (#12).
 - Make formatting checks fail when a formatter fails and ignore piped stdin when formatting repository files.
