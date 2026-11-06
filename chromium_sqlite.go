@@ -28,7 +28,7 @@ func chromiumOpenSnapshotReadOnly(ctx context.Context, dbPath string) (snapshotP
 	_ = ctx
 	dir, err := os.MkdirTemp("", "sweetcookie-chromium-")
 	if err != nil {
-		return "", nil, nil, err
+		return "", nil, []string{fmt.Sprintf("sweetcookie: failed to create cookie snapshot dir: %v", err)}, err
 	}
 	cleanup = func() { _ = os.RemoveAll(dir) }
 
