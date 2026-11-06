@@ -8,23 +8,54 @@ import (
 )
 
 func chromiumUserDataDirs(b Browser) []string {
-	return chromiumLinuxDirs(b, xdgConfigHome(), userHome())
-}
-
-func userHome() string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return ""
+	base := xdgConfigHome()
+	if base == "" {
+		return nil
 	}
-	return home
+
+	switch b {
+	case BrowserInline, BrowserArc, BrowserHelium, BrowserDia, BrowserComet, BrowserAtlas,
+		BrowserFirefox, BrowserZen, BrowserFloorp, BrowserWaterfox, BrowserLibreWolf, BrowserSafari:
+		return nil
+	case BrowserChrome:
+		return []string{
+			filepath.Join(base, "google-chrome"),
+			filepath.Join(base, "google-chrome-beta"),
+			filepath.Join(base, "google-chrome-unstable"),
+		}
+	case BrowserChromium:
+		dirs := []string{filepath.Join(base, "chromium")}
+		if home, err := os.UserHomeDir(); err == nil && home != "" {
+			dirs = append(dirs, chromiumSnapDir(home))
+		}
+		return dirs
+	case BrowserEdge:
+		return []string{
+			filepath.Join(base, "microsoft-edge"),
+			filepath.Join(base, "microsoft-edge-beta"),
+			filepath.Join(base, "microsoft-edge-dev"),
+		}
+	case BrowserBrave:
+		return []string{
+			filepath.Join(base, "BraveSoftware", "Brave-Browser"),
+			filepath.Join(base, "brave-browser"),
+		}
+	case BrowserVivaldi:
+		return []string{filepath.Join(base, "vivaldi")}
+	case BrowserOpera:
+		return []string{filepath.Join(base, "opera")}
+	case BrowserWhale:
+		return []string{filepath.Join(base, "naver-whale")}
+	}
+	return nil
 }
 
 func xdgConfigHome() string {
 	if v := os.Getenv("XDG_CONFIG_HOME"); v != "" {
 		return v
 	}
-	home := userHome()
-	if home == "" {
+	home, err := os.UserHomeDir()
+	if err != nil {
 		return ""
 	}
 	return filepath.Join(home, ".config")
