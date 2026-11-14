@@ -24,7 +24,11 @@ func chromiumUserDataDirs(b Browser) []string {
 			filepath.Join(base, "google-chrome-unstable"),
 		}
 	case BrowserChromium:
-		return []string{filepath.Join(base, "chromium")}
+		dirs := []string{filepath.Join(base, "chromium")}
+		if home, err := os.UserHomeDir(); err == nil && home != "" {
+			dirs = append(dirs, filepath.Join(home, "snap", "chromium", "common", "chromium"))
+		}
+		return dirs
 	case BrowserEdge:
 		return []string{
 			filepath.Join(base, "microsoft-edge"),

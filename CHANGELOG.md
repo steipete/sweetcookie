@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Discover Linux Snap Chromium profiles after XDG profiles while preserving explicit overrides and cookie precedence. Thanks @SebTardif (#15).
+- Reject negative and oversized Safari cookie counts before allocating memory, and preserve Firefox snapshot failure warnings. Thanks @SebTardif (#14, #16).
+- Update SQLite to v1.59.0 and compatible dependencies while retaining Go 1.25 support; use Go 1.27.4 for development, CI, and release verification.
+
 ## v0.1.0 - 2026-10-23
 
 **Highlights:** Discover Firefox cookies in Linux Snap, Flatpak, and XDG profiles; update SQLite and the Go toolchain.

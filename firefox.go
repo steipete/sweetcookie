@@ -23,7 +23,8 @@ func readFirefoxCookies(ctx context.Context, b Browser, profileOverride string, 
 	hosts := originsToHosts(origins)
 	var out []Cookie
 	for _, dbPath := range dbs {
-		snap, cleanup, _, err := chromiumOpenSnapshotReadOnly(ctx, dbPath.path)
+		snap, cleanup, snapWarnings, err := chromiumOpenSnapshotReadOnly(ctx, dbPath.path)
+		warnings = append(warnings, snapWarnings...)
 		if err != nil {
 			continue
 		}

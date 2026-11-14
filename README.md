@@ -78,6 +78,8 @@ result, err := sweetcookie.Get(context.Background(), sweetcookie.Options{
 
 Helium is not part of `DefaultBrowsers()`; request it with `BrowserHelium`. Linux Firefox discovery checks the legacy `~/.mozilla/firefox` root first, then Snap, Flatpak, and XDG configuration roots; duplicate cookies keep legacy precedence. `XDG_CONFIG_HOME` must be absolute, otherwise `~/.config` is used. Firefox Multi-Account Container metadata is exposed through `Cookie.Container`: `ID` is Firefox's `userContextId`, and `Name` comes from `containers.json`. Cookies from different containers remain distinct.
 
+Linux Chromium discovery also checks `~/snap/chromium/common/chromium` after the XDG profile root, preserving XDG cookie precedence. Explicit profile and database overrides still take priority.
+
 ## Selecting cookies and profiles
 
 `Get` matches cookie domains, paths, secure schemes, names, and expiry against the requested origins. The main options are:
@@ -121,7 +123,7 @@ make ci
 `make ci` checks formatting, lint, tests, and the 90% macOS coverage threshold.
 On Linux and Windows, run `make fmt-check lint test`; the cross-platform CI runs
 those checks while macOS enforces the coverage threshold.
-Development, CI, and release verification use the patched Go 1.27.3 toolchain. CI tests
+Development, CI, and release verification use the patched Go 1.27.4 toolchain. CI tests
 macOS 27 (`xcode-27`), Windows, and Linux. The module retains Go 1.25.0 as its supported
 source minimum.
 

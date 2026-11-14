@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, xcode-27, windows-latest]
-        go: ['1.27.3']
+        go: ['1.27.4']
     runs-on: ${{ matrix.os }}
     env:
       # Run every platform with the patched toolchain.
