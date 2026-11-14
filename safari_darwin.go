@@ -99,10 +99,24 @@ func safariReadBinaryCookies(ctx context.Context, filename string, isFallback bo
 	if string(header.Magic[:]) != "cook" {
 		return nil, fmt.Errorf("unexpected magic %q", string(header.Magic[:]))
 	}
+	info, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	if header.NumPages < 0 || int64(header.NumPages) > (info.Size()-8)/4 {
+		return nil, fmt.Errorf("invalid page count %d", header.NumPages)
+	}
 
 	pageSizes := make([]int32, header.NumPages)
 	if err := binary.Read(f, binary.BigEndian, &pageSizes); err != nil {
 		return nil, err
+	}
+	remaining := info.Size() - 8 - int64(header.NumPages)*4
+	for i, size := range pageSizes {
+		if size < 0 || int64(size) > remaining {
+			return nil, fmt.Errorf("page %d: invalid size %d", i, size)
+		}
+		remaining -= int64(size)
 	}
 
 	var out []Cookie
@@ -125,6 +139,9 @@ func safariReadBinaryCookies(ctx context.Context, filename string, isFallback bo
 }
 
 func safariReadPage(r io.Reader, page int, pageSize int32, storePath string, isFallback bool) ([]Cookie, error) {
+	if pageSize < 0 {
+		return nil, fmt.Errorf("page %d: invalid size %d", page, pageSize)
+	}
 	b := make([]byte, pageSize)
 	if _, err := io.ReadFull(r, b); err != nil {
 		return nil, fmt.Errorf("page %d: %w", page, err)
@@ -141,6 +158,9 @@ func safariReadPage(r io.Reader, page int, pageSize int32, storePath string, isF
 		return nil, fmt.Errorf("page %d: unexpected header %v", page, header.Header)
 	}
 
+	if header.NumCookies < 0 || int64(header.NumCookies) > int64(br.Len()/4) {
+		return nil, fmt.Errorf("page %d: invalid cookie count %d", page, header.NumCookies)
+	}
 	offsets := make([]int32, header.NumCookies)
 	if err := binary.Read(br, binary.LittleEndian, &offsets); err != nil {
 		return nil, fmt.Errorf("page %d: %w", page, err)
